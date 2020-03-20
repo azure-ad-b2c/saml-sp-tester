@@ -1,0 +1,41 @@
+﻿@page
+@model SAMLTEST.Pages.SP.AssertionConsumerModel
+@{
+    ViewData["Title"] = "Assertion Consumer";
+    Layout = "~/Pages/_Layout.cshtml";
+}
+
+<h2 id="success">SAML Login Success</h2>
+
+<div>
+    <table id="t01" class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Attribute</th>
+                <th scope="col">Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (KeyValuePair<string, string> element in Model.attrsandvals)
+            {
+                <tr>
+                    <td>
+                        @element.Key
+                    </td>
+                    <td>
+                        @element.Value
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+
+<a class="btn btn-link" data-toggle="collapse" href="#rawSAML" role="link" aria-expanded="false" aria-controls="rawSAML">Show raw SAML</a>
+<p class="collapse" id="rawSAML" name="rawSAML" rows="20" cols="200">
+    @Model.SAMLResponse
+</p>
+<p>
+    <a class="btn btn-primary LogoutBtn" name="LogoutBtn" href="/Logout?Tenant=@Model.TenantId&Policy=@Model.PolicyId&SessionId=@Model.SessionId&NameId=@Model.NameId&Issuer=@Model.Issuer&DCInfo=@Model.DCInfo" role="link">Logout</a>
+</p>

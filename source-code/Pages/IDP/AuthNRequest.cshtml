@@ -1,0 +1,29 @@
+﻿@page
+@model SAMLTEST.Pages.IDP.AuthNRequestModel
+@{
+    ViewData["Title"] = "AuthNRequest";
+    Layout = "~/Pages/_Layout.cshtml";
+}
+
+<h2>Demo Login Page</h2>
+
+
+<form>
+    <div class="form-group">
+        <label for="exampleInputEmail1">Username</label>
+        <input type="text" class="form-control" id="usernameid" aria-describedby="usernameHelp" placeholder="Enter Username">
+        <small id="emailHelp" class="form-text text-muted">You really don't need to fill this out as its a demo app :)</small>
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword1">Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+    </div>
+</form>
+
+
+<form action="@Model.ACS" method="post" >
+    <input id="SAMLResponse" name="SAMLResponse" type="hidden" value="@Html.Raw(@Model.SAMLResponse)" />
+    <input id="RelayState" name="RelayState" type="hidden" value="@Html.Raw(@Model.RelayState)" />
+    <input id="Button1" type="submit" value="Login" class="btn btn-primary"/>
+</form>
+    

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Description>A simple DotNet Core2 SAML Identity / Service Provider for B2C Training or Testing purposes only</Description>
+    <PackageTags>SAML</PackageTags>
+    <RepositoryUrl>https://github.com/</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <UserSecretsId>39ec726f-b878-4431-bb2a-c02b66a55583</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="B2CPolicyTemplate.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="B2CPolicyTemplate.xml" />
+  </ItemGroup>
+</Project>

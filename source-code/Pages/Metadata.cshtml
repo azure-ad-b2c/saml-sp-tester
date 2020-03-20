@@ -1,0 +1,55 @@
+﻿@page
+@model SAMLTEST.Pages.MetadataModel
+@{
+    // The code below is used to display the Metadat in a pretty view
+    // If nothing is passed to this page the default XML view is shown.
+// 
+    if (!Model.ShowView)
+    {
+        Layout = null;
+        Response.ContentType = "text/xml";
+    }
+    else
+    {
+        @:<script src="/js/clipboard.min.js"></script>
+        @:<script> var clipboard = new ClipboardJS('.btn');$(".btn").tooltip('disable');</script>
+        @:<script>clipboard.on('success', function(e) {
+        @:        e.clearSelection();
+        @:        $(".btn").tooltip('enable');
+        @:        $(".btn").tooltip('show');
+        @:        setTimeout(function(){
+        @:          $(".btn").tooltip('hide');
+        @:          $(".btn").tooltip('disable');
+        @:        }, 2000); });
+        @: </script>
+        @:<h2>Below is the Metadata for this service</h2>
+        @:<p>The direct metadata URL is: <a href="@Model.ServerName/Metadata">@Model.ServerName/Metadata</a></p>
+        @:<code class="language-html" data-lang="html"><textarea  id="metadata" name="metadata" rows="20" cols="200">
+    }
+}
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<EntityDescriptor ID="id123456789" entityID="@Model.ServerName" validUntil="2099-12-31T23:59:59Z" xmlns="urn:oasis:names:tc:SAML:2.0:metadata">
+    <SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="@Model.ServerName/logout" ResponseLocation="@Model.ServerName/logout" />
+
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+
+        <AssertionConsumerService index="0" isDefault="true" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="@Model.ServerName/SP/AssertionConsumer" />
+        
+    </SPSSODescriptor>
+    
+    <IDPSSODescriptor WantAuthnRequestsSigned="false" WantAssertionsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="@Model.ServerName/logout" ResponseLocation="@Model.ServerName/logout" />
+
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="@Model.ServerName/IDP/AuthNRequest" />
+
+    </IDPSSODescriptor>
+</EntityDescriptor>
+@{
+    if (Model.ShowView)
+    {
+        @:</textarea></code>
+        @:<button class="btn btn-primary" data-clipboard-target="#metadata" data-toggle="tooltip" data-placement="top" title="Copied to clipboard">Copy to clipboard</button >
+    }
+}

@@ -1,0 +1,46 @@
+﻿@page
+@model SAMLTEST.Pages.SP.IndexModel
+@{
+    ViewData["Title"] = "SP Initiated SSO";
+    Layout = "~/Pages/_Layout.cshtml";
+}
+
+<h2>SP Initiated SSO</h2>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+
+        @Html.LabelFor(m => m.Tenant)
+        @Html.TextBoxFor(m => m.Tenant, htmlAttributes: new { @class = "form-control", @placeholder = "Enter Tenant Id" })
+        <small id="emailHelp" class="form-text text-muted">The Tenant name with or without onmicrosoft.com.</small>
+        <div class="text-danger">@Html.ValidationMessageFor(m => m.Tenant)</div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Policy)
+        @Html.TextBoxFor(m => m.Policy, htmlAttributes: new { @class = "form-control", @placeholder = "Enter B2C Policy" })
+        <small id="emailHelp" class="form-text text-muted">The Policy name with or without B2C_1A_</small>
+        <div class="text-danger">@Html.ValidationMessageFor(m => m.Policy)</div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Issuer)
+        @Html.TextBoxFor(m => m.Issuer, htmlAttributes: new { @class = "form-control", @placeholder = "Enter Issue for the request. this is identifier Uri which uniquely identifies application" })
+        <small id="emailHelp" class="form-text text-muted">Enter issuer for the request. This is identifier Uri which uniquely identifies application.</small>
+        <div class="text-danger">@Html.ValidationMessageFor(m => m.Issuer)</div>
+    </div>
+    @*<div class="form-group">
+        @Html.LabelFor(m => m.IsAzureAD)
+        @Html.CheckBoxFor(m => m.IsAzureAD, new { @checked = "checked" }))
+        <div class="text-danger">@Html.ValidationMessageFor(m => m.IsAzureAD)</div>
+    </div>*@
+    <input id="Button1" type="submit" value="Login" class="btn btn-primary" />
+}
+
+
+

@@ -1,0 +1,32 @@
+﻿@page
+@model SAMLTEST.Pages.B2CPolicyModel
+@{
+    ViewData["Title"] = "B2CPolicy";
+    Layout = "~/Pages/_Layout.cshtml";
+}
+
+<h2>B2C Policy Download</h2>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+
+        @Html.LabelFor(m => m.Tenant)
+        @Html.TextBoxFor(m => m.Tenant, htmlAttributes: new { @class = "form-control", @placeholder = "Enter Tenant Id" })
+        <small id="emailHelp" class="form-text text-muted">The Tenant name with or without onmicrosoft.com.</small>
+        <div class="text-danger">@Html.ValidationMessageFor(m => m.Tenant)</div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Policy)
+        @Html.TextBoxFor(m => m.Policy, htmlAttributes: new { @class = "form-control", @placeholder = "Enter B2C Policy" })
+        <small id="emailHelp" class="form-text text-muted">The Policy name with or without B2C_1A_</small>
+        <div class="text-danger">@Html.ValidationMessageFor(m => m.Policy)</div>
+    </div>
+    <input id="Button1" type="submit" value="Download Policy" class="btn btn-primary" />
+}
+
