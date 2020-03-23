@@ -18,20 +18,16 @@ namespace SAMLTEST.Pages.SP
 
 
         [DisplayName("Tenant Name"), Required]
-        // public string Tenant { get; set; } = "cpim3.ccsctp.net"; // this is a nova test tenant
-        // public string Tenant { get; set; } = "azureadb2ctests"; // this is a tenant for which Azure AD sign in with microaft adate accout is configured
-        public string Tenant { get; set; } = "azureadb2ctests"; // this is also a normal b2c tenant 
+        public string Tenant { get; set; } = "azureadb2ctests"; 
         [DisplayName("B2C Policy"),Required]
         public string Policy { get; set; } = "B2C_1A_SignUpOrSignin_SamlApp_Local";
-        // public string Policy { get; set; } = "B2C_1A_saml_demo_signup_signin"; // nova policy
+      
 
         [DisplayName("Issuer")]
-        // public string Issuer { get; set; } = "https://cpim3.ccsctp.net/samlAPPUITest"; // nova app configured
         public string Issuer { get; set; } = "https://azureadb2ctests.onmicrosoft.com/samlAPPUITest";
 
         [DisplayName("DCInfo")]
-        // public string DCInfo { get; set; } = "dc=BL2&slice=505-000"; nova
-        public string DCInfo { get; set; } = ""; // dc=BL2&slice=001-001 test slice
+        public string DCInfo { get; set; } = ""; 
 
         private readonly IConfiguration _configuration;
 
@@ -79,10 +75,10 @@ namespace SAMLTEST.Pages.SP
         public IActionResult SendAzureAdRequest(string Tenant)
         {
             AuthnRequest AuthnReq;
-            AuthnReq = new AuthnRequest("https://login.microsoftonline.com/42cf448f-0704-4dd0-85b5-87e61c2804a9/saml2", SAMLHelper.GetThisURL(this), string.Empty);
+            AuthnReq = new AuthnRequest("https://login.microsoftonline.com/00000000-0000-0000-0000-000000000000/saml2", SAMLHelper.GetThisURL(this), string.Empty);
 
             string cdoc = SAMLHelper.Compress(AuthnReq.ToString());
-            string URL = $"https://login.microsoftonline.com/42cf448f-0704-4dd0-85b5-87e61c2804a9/saml2?SAMLRequest=" + System.Web.HttpUtility.UrlEncode(cdoc);
+            string URL = $"https://login.microsoftonline.com/00000000-0000-0000-0000-000000000000/saml2?SAMLRequest=" + System.Web.HttpUtility.UrlEncode(cdoc);
             return Redirect(URL);
         }
 
