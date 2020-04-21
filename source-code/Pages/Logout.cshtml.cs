@@ -47,7 +47,7 @@ namespace SAMLTEST.Pages
 
         public IActionResult OnPost(string Tenant, string Policy, string SessionId, string NameId, string Issuer, string DCInfo)
         {
-            string b2cloginurl = _configuration["SAMLTEST:b2cloginurl"];
+            string b2cloginurl = Tenant.Split('.')[0] + ".b2clogin.com";
 
             if (!string.IsNullOrEmpty(DCInfo))
             {
