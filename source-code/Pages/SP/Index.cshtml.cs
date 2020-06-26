@@ -39,6 +39,21 @@ namespace SAMLTEST.Pages.SP
             _configuration = configuration;
         }
 
+        public IActionResult OnGet(string Tenant, string Policy, string Issuer)
+        {
+            if (!String.IsNullOrEmpty(Tenant)) {
+                this.Tenant = Tenant;
+            }
+            if (!String.IsNullOrEmpty(Policy)) {
+                this.Policy = Policy;
+            }
+            if (!String.IsNullOrEmpty(Issuer))
+            {
+                this.Issuer = Issuer;
+            }
+            return Page();
+        }
+
         /// <summary>
         /// This Post Action is used to Generate the AuthN Request and redirect to the B2C Login endpoint
         /// </summary>
