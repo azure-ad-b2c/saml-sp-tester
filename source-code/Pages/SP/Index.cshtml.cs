@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using SAMLTEST.SAMLObjects;
@@ -41,16 +42,21 @@ namespace SAMLTEST.Pages.SP
 
         public IActionResult OnGet(string Tenant, string Policy, string Issuer)
         {
+            this.Tenant = HttpContext.Session.GetString("Tenant");
+            this.Policy = HttpContext.Session.GetString("Policy");
+            this.Issuer = HttpContext.Session.GetString("Issuer");
             if (!String.IsNullOrEmpty(Tenant)) {
                 this.Tenant = Tenant;
             }
             if (!String.IsNullOrEmpty(Policy)) {
                 this.Policy = Policy;
             }
-            if (!String.IsNullOrEmpty(Issuer))
-            {
+            if (!String.IsNullOrEmpty(Issuer)) {
                 this.Issuer = Issuer;
             }
+            if ( null != this.Tenant) HttpContext.Session.SetString("Tenant", this.Tenant);
+            if ( null != this.Policy) HttpContext.Session.SetString("Policy", this.Policy);
+            if ( null != this.Issuer ) HttpContext.Session.SetString("Issuer", this.Issuer);
             return Page();
         }
 
