@@ -12,6 +12,7 @@ namespace SAMLTEST
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddSession();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -35,8 +36,8 @@ namespace SAMLTEST
             // Use Status Code error handling to our custom page.
             app.UseStatusCodePagesWithRedirects("/Error?StatusCode={0}");
             // For the wwwroot folder
-            app.UseStaticFiles(); 
-
+            app.UseStaticFiles();
+            app.UseSession();
             app.UseMvc();
         }
         
