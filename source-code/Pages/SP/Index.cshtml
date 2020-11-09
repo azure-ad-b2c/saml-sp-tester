@@ -22,6 +22,14 @@
         <small id="emailHelp" class="form-text text-muted">The Tenant name with or without onmicrosoft.com.</small>
         <div class="text-danger">@Html.ValidationMessageFor(m => m.Tenant)</div>
     </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.HostName)
+        @Html.TextBoxFor(m => m.HostName, htmlAttributes: new { @class = "form-control", @placeholder = "Enter Host Name" })
+        <small id="emailHelp" class="form-text text-muted">Either yourtenant.b2clogin.com or a custom domain name.</small>
+        <div class="text-danger">@Html.ValidationMessageFor(m => m.Tenant)</div>
+    </div>
+
     <div class="form-group">
         @Html.LabelFor(m => m.Policy)
         @Html.TextBoxFor(m => m.Policy, htmlAttributes: new { @class = "form-control", @placeholder = "Enter B2C Policy" })
@@ -35,10 +43,10 @@
         <div class="text-danger">@Html.ValidationMessageFor(m => m.Issuer)</div>
     </div>
     @*<div class="form-group">
-        @Html.LabelFor(m => m.IsAzureAD)
-        @Html.CheckBoxFor(m => m.IsAzureAD, new { @checked = "checked" }))
-        <div class="text-danger">@Html.ValidationMessageFor(m => m.IsAzureAD)</div>
-    </div>*@
+            @Html.LabelFor(m => m.IsAzureAD)
+            @Html.CheckBoxFor(m => m.IsAzureAD, new { @checked = "checked" }))
+            <div class="text-danger">@Html.ValidationMessageFor(m => m.IsAzureAD)</div>
+        </div>*@
     <input id="Button1" type="submit" value="Login" class="btn btn-primary" />
 }
 

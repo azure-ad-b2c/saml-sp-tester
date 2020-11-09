@@ -1,0 +1,5 @@
+source-code/obj/*
+source-code/bin/*
+source-code/.vs/*
+*.user
+samltestapp4*.*

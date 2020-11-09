@@ -47,7 +47,14 @@ namespace SAMLTEST.Pages
 
         public IActionResult OnPost(string Tenant, string Policy, string SessionId, string NameId, string Issuer, string DCInfo)
         {
-            string b2cloginurl = Tenant.Split('.')[0] + ".b2clogin.com";
+            string b2cloginurl = "";// Tenant.Split('.')[0] + ".b2clogin.com";
+            if ( !Tenant.EndsWith(".onmicrosoft.com"))
+            {
+                b2cloginurl = Tenant;
+            } else
+            {
+                b2cloginurl = Tenant.Split('.')[0] + ".b2clogin.com";
+            }
 
             if (!string.IsNullOrEmpty(DCInfo))
             {
