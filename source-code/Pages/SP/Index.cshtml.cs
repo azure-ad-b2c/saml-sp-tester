@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using SAMLTEST.Models;
 using SAMLTEST.SAMLObjects;
 using System;
 using System.ComponentModel;
@@ -19,112 +20,124 @@ namespace SAMLTEST.Pages.SP
 
 
         [DisplayName("Tenant Name"), Required]
-        public string Tenant { get; set; } = "azureadb2ctests";
+        public string Tenant { get; set; }
 
         [DisplayName("Host Name"), Required]
-        public string HostName { get; set; } = "azureadb2ctests.b2clogin.com";
+        public string HostName { get; set; }
 
-        [DisplayName("B2C Policy"),Required]
-        public string Policy { get; set; } = "B2C_1A_SignUpOrSignin_SamlApp_Local";
-      
+        [DisplayName("B2C Policy"), Required]
+        public string Policy { get; set; }
 
         [DisplayName("Issuer")]
-        public string Issuer { get; set; } = "https://azureadb2ctests.onmicrosoft.com/samlAPPUITest";
+        public string Issuer { get; set; }
 
         [DisplayName("DCInfo")]
-        public string DCInfo { get; set; } = ""; 
+        public string DCInfo { get; set; }
 
-        private readonly IConfiguration _configuration;
+        private readonly AzureAdB2C _azureAdB2C;
 
         /// <summary>
         /// This Constructor is used to retrieve the Appsettings data
         /// </summary>
-        public IndexModel(IConfiguration configuration)
+        public IndexModel(IOptions<AzureAdB2C> options)
         {
-            _configuration = configuration;
+            _azureAdB2C = options.Value;
+            Tenant = _azureAdB2C.Tenant;
+            HostName = _azureAdB2C.HostName;
+            Policy = _azureAdB2C.Policy;
+            Issuer = _azureAdB2C.Issuer;
+            DCInfo = _azureAdB2C.DCInfo;
         }
 
-        public IActionResult OnGet(string Tenant, string HostName, string Policy, string Issuer)
+        public IActionResult OnGet(string tenant, string hostName, string policy, string issuer)
         {
-            this.Tenant = HttpContext.Session.GetString("Tenant");
-            this.HostName = HttpContext.Session.GetString("HostName");
-            this.Policy = HttpContext.Session.GetString("Policy");
-            this.Issuer = HttpContext.Session.GetString("Issuer");
-            if (!string.IsNullOrEmpty(Tenant)) {
-                this.Tenant = Tenant;
-            }
-            if (!string.IsNullOrEmpty(HostName))
+            // Try to get values from the sessions, if none then use the default values
+            this.Tenant = string.IsNullOrEmpty(HttpContext.Session.GetString("Tenant")) ? this.Tenant : HttpContext.Session.GetString("Tenant");
+            this.HostName = string.IsNullOrEmpty(HttpContext.Session.GetString("HostName")) ? this.HostName : HttpContext.Session.GetString("HostName");
+            this.Policy = string.IsNullOrEmpty(HttpContext.Session.GetString("Policy")) ? this.Policy : HttpContext.Session.GetString("Policy");
+            this.Issuer = string.IsNullOrEmpty(HttpContext.Session.GetString("Issuer")) ? this.Issuer : HttpContext.Session.GetString("Issuer");
+            // Override the values with the query string values
+            if (!string.IsNullOrEmpty(tenant))
             {
-                this.HostName = HostName;
+                this.Tenant = tenant;
+            }
+            if (!string.IsNullOrEmpty(hostName))
+            {
+                this.HostName = hostName;
             }
             // if still null, build up hostname yourtenant.b2clogin.com from tenant name yourtenant.onmicrosoft.com 
-            if (string.IsNullOrEmpty(this.HostName) )
+            if (string.IsNullOrEmpty(this.HostName))
             {
                 string TenantName = this.Tenant.ToLower()?.Replace(".onmicrosoft.com", "");
                 this.HostName = TenantName + ".b2clogin.com";
             }
-            if (!string.IsNullOrEmpty(Policy)) {
-                this.Policy = Policy;
+            if (!string.IsNullOrEmpty(policy))
+            {
+                this.Policy = policy;
             }
-            if (!string.IsNullOrEmpty(Issuer)) {
-                this.Issuer = Issuer;
+            if (!string.IsNullOrEmpty(issuer))
+            {
+                this.Issuer = issuer;
             }
-            if ( null != this.Tenant) HttpContext.Session.SetString("Tenant", this.Tenant);
-            if ( null != this.HostName) HttpContext.Session.SetString("HostName", this.HostName);
-            if ( null != this.Policy) HttpContext.Session.SetString("Policy", this.Policy);
-            if ( null != this.Issuer ) HttpContext.Session.SetString("Issuer", this.Issuer);
+            // Save the values to the session for the future use
+            if (null != this.Tenant) HttpContext.Session.SetString("Tenant", this.Tenant);
+            if (null != this.HostName) HttpContext.Session.SetString("HostName", this.HostName);
+            if (null != this.Policy) HttpContext.Session.SetString("Policy", this.Policy);
+            if (null != this.Issuer) HttpContext.Session.SetString("Issuer", this.Issuer);
             return Page();
         }
 
         /// <summary>
         /// This Post Action is used to Generate the AuthN Request and redirect to the B2C Login endpoint
         /// </summary>
-        public IActionResult OnPost(string Tenant, string HostName, string Policy, string Issuer, string DCInfo, bool IsAzureAD)
+        public IActionResult OnPost(string tenant, string hostName, string policy, string issuer, string dcInfo, bool isAzureAD)
         {
-            if (string.IsNullOrEmpty(Policy) || IsAzureAD)
+            if (string.IsNullOrEmpty(policy) || isAzureAD)
             {
-                return SendAzureAdRequest(Tenant);
+                return SendAzureAdRequest(tenant);
             }
 
-            string SamlRequest = string.Empty;
-            string b2cloginurl = HostName.ToLower();
-            if (!String.IsNullOrEmpty(HostName))
+            string b2cloginurl = hostName.ToLower();
+            if (!string.IsNullOrEmpty(hostName))
             {
-                b2cloginurl = HostName;
+                b2cloginurl = hostName;
             }
-            else if (!String.IsNullOrEmpty(this.Tenant) && this.Tenant.EndsWith(".onmicrosoft.com"))
+            else if (!string.IsNullOrEmpty(this.Tenant) && this.Tenant.EndsWith(".onmicrosoft.com"))
             {
-                string TenantName = Tenant.ToLower()?.Replace(".onmicrosoft.com", "");
+                string TenantName = tenant.ToLower()?.Replace(".onmicrosoft.com", "");
                 b2cloginurl = TenantName + ".b2clogin.com";
             }
 
 
-            Policy = Policy.StartsWith("B2C_1A_") ? Policy : "B2C_1A_" + Policy;
-            //Tenant = (Tenant.ToLower().Contains("onmicrosoft.com") || Tenant.ToLower().Contains(".net")) ? Tenant : Tenant + ".onmicrosoft.com";
-            DCInfo = string.IsNullOrWhiteSpace(DCInfo) ? string.Empty : "&" + DCInfo;
-            Issuer = string.IsNullOrWhiteSpace(Issuer) ? SAMLHelper.GetThisURL(this) : Issuer;
+            policy = policy.StartsWith("B2C_1A_") ? policy : "B2C_1A_" + policy;
+            tenant = (tenant.Contains("onmicrosoft.com", StringComparison.OrdinalIgnoreCase)
+                        || tenant.Contains(".net", StringComparison.OrdinalIgnoreCase))
+                         ? tenant
+                         : $"{tenant}.onmicrosoft.com";
+            dcInfo = string.IsNullOrWhiteSpace(dcInfo) ? string.Empty : $"&{dcInfo}";
+            issuer = string.IsNullOrWhiteSpace(issuer) ? SAMLHelper.GetThisURL(this) : issuer;
 
-            if (null != Tenant) HttpContext.Session.SetString("Tenant", Tenant);
+            if (null != tenant) HttpContext.Session.SetString("Tenant", tenant);
             if (null != b2cloginurl) HttpContext.Session.SetString("HostName", b2cloginurl);
-            if (null != Policy) HttpContext.Session.SetString("Policy", Policy);
-            if (null != Issuer) HttpContext.Session.SetString("Issuer", Issuer);
+            if (null != policy) HttpContext.Session.SetString("Policy", policy);
+            if (null != issuer) HttpContext.Session.SetString("Issuer", issuer);
 
-            string RelayState = SAMLHelper.toB64(Tenant) + "." + SAMLHelper.toB64(Policy) + "." + SAMLHelper.toB64(Issuer);
+            string RelayState = $"{SAMLHelper.toB64(tenant)}.{SAMLHelper.toB64(policy)}.{SAMLHelper.toB64(issuer)}";
 
-            if (!string.IsNullOrEmpty(DCInfo))
+            if (!string.IsNullOrEmpty(dcInfo))
             {
-                RelayState = RelayState + "." + SAMLHelper.toB64(DCInfo);
+                RelayState = $"{RelayState}.{SAMLHelper.toB64(dcInfo)}";
             }
 
             AuthnRequest AuthnReq;
-            string URL = "https://" + b2cloginurl + "/" + Tenant + "/" + Policy + "/samlp/sso/login?" + DCInfo;
-            AuthnReq = new AuthnRequest(URL, SAMLHelper.GetThisURL(this), Issuer);
+            string URL = $"https://{b2cloginurl}/{tenant}/{policy}/samlp/sso/login?{dcInfo}";
+            AuthnReq = new AuthnRequest(URL, SAMLHelper.GetThisURL(this), issuer);
             string cdoc = SAMLHelper.Compress(AuthnReq.ToString());
-            URL = URL + "&SAMLRequest=" + System.Web.HttpUtility.UrlEncode(cdoc) + "&RelayState=" + System.Web.HttpUtility.UrlEncode(RelayState);
+            URL = $"{URL}&SAMLRequest={System.Web.HttpUtility.UrlEncode(cdoc)}&RelayState={System.Web.HttpUtility.UrlEncode(RelayState)}";
             return Redirect(URL);
         }
 
-        public IActionResult SendAzureAdRequest(string Tenant)
+        public IActionResult SendAzureAdRequest(string tenant)
         {
             AuthnRequest AuthnReq;
             AuthnReq = new AuthnRequest("https://login.microsoftonline.com/00000000-0000-0000-0000-000000000000/saml2", SAMLHelper.GetThisURL(this), string.Empty);
