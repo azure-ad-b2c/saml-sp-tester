@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using SAMLTEST.SAMLObjects;
 using System;
@@ -14,9 +13,9 @@ namespace SAMLTEST.Pages.IDP
     /// </summary>
     public class AuthNRequestModel : PageModel
     {
-        public String RelayState { get; set; }
-        public String ACS { get; set; }
-        public String ID { get; private set; }
+        public string RelayState { get; set; }
+        public string ACS { get; set; }
+        public string ID { get; private set; }
         [DisplayName("UserName")]
         public string UserName { get; set; }
         [DisplayName("Password")]
@@ -34,16 +33,16 @@ namespace SAMLTEST.Pages.IDP
         }
 
         /// <summary>
-        /// This Get Action is used to Generate and POST the SAML Repsonse 
+        /// This Get Action is used to Generate and POST the SAML Response
         /// based on a supplied AuthN Request
         /// </summary>
-        public void OnGet(String SAMLRequest, String RelayState)
-        { 
+        public void OnGet(string SAMLRequest, string RelayState)
+        {
             this.RelayState = RelayState;
 
-            String sml = SAMLHelper.Decompress(SAMLRequest);
-            XmlDocument doc = new XmlDocument();
-            XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
+            var sml = SAMLHelper.Decompress(SAMLRequest);
+            var doc = new XmlDocument();
+            var nsmgr = new XmlNamespaceManager(doc.NameTable);
             nsmgr.AddNamespace("saml", "urn:oasis:names:tc:SAML:2.0:assertion");
             nsmgr.AddNamespace("samlp", "urn:oasis:names:tc:SAML:2.0:protocol");
             doc.LoadXml(sml);
@@ -52,10 +51,10 @@ namespace SAMLTEST.Pages.IDP
             ACS = root.SelectSingleNode("/samlp:AuthnRequest/@AssertionConsumerServiceURL", nsmgr).Value;
             ID = root.SelectSingleNode("/samlp:AuthnRequest/@ID", nsmgr).Value;
 
-            string httpors = HttpContext.Request.IsHttps ? "https://" : "http://";
-            string thisurl = httpors + HttpContext.Request.Host.Value;
-            SAMLResponse Resp = new SAMLResponse(ACS, ID, thisurl, _configuration);
-            this.SAMLResponse = Convert.ToBase64String(Encoding.UTF8.GetBytes(Resp. ToString()));
+            var httpors = HttpContext.Request.IsHttps ? "https://" : "http://";
+            var thisurl = httpors + HttpContext.Request.Host.Value;
+            var response = new SAMLResponse(ACS, ID, thisurl, _configuration);
+            this.SAMLResponse = Convert.ToBase64String(Encoding.UTF8.GetBytes(response.ToString()));
             this.RelayState = RelayState;
         }
 
