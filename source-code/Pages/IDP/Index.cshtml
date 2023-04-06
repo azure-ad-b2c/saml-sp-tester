@@ -25,11 +25,12 @@
         <small id="emailHelp" class="form-text text-muted">The Policy name with or without B2C_1A_</small>
         <div class="text-danger">@Html.ValidationMessageFor(m => m.Policy)</div>
     </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Issuer)
+        @Html.TextBoxFor(m => m.Issuer, htmlAttributes: new { @class = "form-control", @placeholder = "Enter Entity ID a.k.a app identifier uri" })
+        <small id="emailHelp" class="form-text text-muted">The App Identifier URI (from application overview page)</small>
+        <div class="text-danger">@Html.ValidationMessageFor(m => m.Issuer)</div>
+    </div>
     <input id="Button1" type="submit" value="Login" class="btn btn-primary" />
 
 }
-
-
-
-
-

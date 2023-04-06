@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Reflection;
-using SAMLTEST.SAMLObjects;
 using Microsoft.Extensions.Configuration;
+using SAMLTEST.SAMLObjects;
+using System;
+using System.ComponentModel;
 
 namespace SAMLTEST.Pages
 {
@@ -18,7 +12,7 @@ namespace SAMLTEST.Pages
         private readonly IConfiguration _configuration;
 
         [DisplayName("Tenant Name")]
-        public string Tenant { get; set; } 
+        public string Tenant { get; set; }
         [DisplayName("B2C Policy")]
         public string Policy { get; set; }
 
@@ -37,40 +31,32 @@ namespace SAMLTEST.Pages
         }
 
 
-        public IActionResult OnGet(string Tenant, string Policy, string SessionId,string NameId, string Issuer, string DCInfo)
+        public IActionResult OnGet(string tenant, string policy, string sessionId, string nameId, string issuer, string dcInfo)
         {
-            if (String.IsNullOrEmpty(Tenant) || String.IsNullOrEmpty(Policy))
-                return Page();
-            else
-                return OnPost(Tenant, Policy, SessionId, NameId, Issuer, DCInfo);
+            return (string.IsNullOrEmpty(tenant) || String.IsNullOrEmpty(policy))
+                ? Page()
+                : OnPost(tenant, policy, sessionId, nameId, issuer, dcInfo);
         }
 
-        public IActionResult OnPost(string Tenant, string Policy, string SessionId, string NameId, string Issuer, string DCInfo)
+        public IActionResult OnPost(string tenant, string policy, string sessionId, string nameId, string issuer, string dcInfo)
         {
-            string b2cloginurl = "";// Tenant.Split('.')[0] + ".b2clogin.com";
-            if ( !Tenant.EndsWith(".onmicrosoft.com"))
+            Policy = policy.StartsWith("B2C_1A_") ? policy : "B2C_1A_" + policy;
+            Tenant = tenant.Contains("onmicrosoft.com", StringComparison.OrdinalIgnoreCase) ? tenant : $"{tenant}.onmicrosoft.com";
+            Issuer = string.IsNullOrEmpty(issuer) ? this.Issuer : issuer;
+            var b2cLoginDomain = $"{Tenant.Split(".")[0]}.b2clogin.com";
+            var relayState = $"{SAMLHelper.toB64(Tenant)}.{SAMLHelper.toB64(Policy)}.{SAMLHelper.toB64(Issuer)}";
+
+            if (!string.IsNullOrEmpty(dcInfo))
             {
-                b2cloginurl = Tenant;
-            } else
-            {
-                b2cloginurl = Tenant.Split('.')[0] + ".b2clogin.com";
+                DCInfo = dcInfo.Replace("dc", "&dc").Replace("slice", "&slice");
             }
 
-            if (!string.IsNullOrEmpty(DCInfo))
-            {
-                DCInfo = DCInfo.Replace("dc", "&dc");
-                DCInfo = DCInfo.Replace("slice", "&slice");
-            }
+            var url = $"https://{b2cLoginDomain}/{Tenant}/{Policy}/samlp/sso/logout?{DCInfo}";
+            var logoutRequest = new LogoutRequest(url, SAMLHelper.GetThisURL(this), sessionId, nameId, Issuer);
+            var cdoc = SAMLHelper.Compress(logoutRequest.ToString());
+            url = $"{url}&SAMLRequest={System.Web.HttpUtility.UrlEncode(cdoc)}";
 
-            Policy = Policy.StartsWith("B2C_1A_") ? Policy : "B2C_1A_" + Policy;
-            Tenant = (Tenant.ToLower().Contains("onmicrosoft.com") || Tenant.ToLower().Contains("ccsctp.net")) ? Tenant : Tenant + ".onmicrosoft.com";
-            string URL = "https://" + b2cloginurl + "/te/" + Tenant + "/" + Policy + "/samlp/sso/logout?" + DCInfo;
-
-            LogoutRequest logoutRequest = new LogoutRequest(URL, SAMLHelper.GetThisURL(this), SessionId, NameId, Issuer);
-            string cdoc = SAMLHelper.Compress(logoutRequest.ToString());
-            URL = URL  + "&SAMLRequest=" + System.Web.HttpUtility.UrlEncode(cdoc);
-            
-            return Redirect(URL);
+            return Redirect(url);
 
         }
     }
