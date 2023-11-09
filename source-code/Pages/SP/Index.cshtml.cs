@@ -46,10 +46,10 @@ namespace SAMLTEST.Pages.SP
 
         public IActionResult OnGet(string Tenant, string HostName, string Policy, string Issuer)
         {
-            this.Tenant = HttpContext.Session.GetString("Tenant");
-            this.HostName = HttpContext.Session.GetString("HostName");
-            this.Policy = HttpContext.Session.GetString("Policy");
-            this.Issuer = HttpContext.Session.GetString("Issuer");
+            this.Tenant = HttpContext.Session.GetString("Tenant") ?? this.Tenant;
+            this.HostName = HttpContext.Session.GetString("HostName") ?? this.HostName;
+            this.Policy = HttpContext.Session.GetString("Policy") ?? this.Policy;
+            this.Issuer = HttpContext.Session.GetString("Issuer") ?? this.Issuer;
             if (!string.IsNullOrEmpty(Tenant)) {
                 this.Tenant = Tenant;
             }
