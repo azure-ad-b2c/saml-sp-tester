@@ -109,11 +109,11 @@ namespace SAMLTEST.Pages.SP
             if (null != Policy) HttpContext.Session.SetString("Policy", Policy);
             if (null != Issuer) HttpContext.Session.SetString("Issuer", Issuer);
 
-            string RelayState = SAMLHelper.toB64(Tenant) + "." + SAMLHelper.toB64(Policy) + "." + SAMLHelper.toB64(Issuer);
+            string RelayState = SAMLHelper.ToBase64(Tenant) + "." + SAMLHelper.ToBase64(Policy) + "." + SAMLHelper.ToBase64(Issuer);
 
             if (!string.IsNullOrEmpty(DCInfo))
             {
-                RelayState = RelayState + "." + SAMLHelper.toB64(DCInfo);
+                RelayState = RelayState + "." + SAMLHelper.ToBase64(DCInfo);
             }
 
             AuthnRequest AuthnReq;
