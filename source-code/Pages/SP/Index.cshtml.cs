@@ -46,10 +46,10 @@ namespace SAMLTEST.Pages.SP
 
         public IActionResult OnGet(string Tenant, string HostName, string Policy, string Issuer)
         {
-            this.Tenant = HttpContext.Session.GetString("Tenant");
-            this.HostName = HttpContext.Session.GetString("HostName");
-            this.Policy = HttpContext.Session.GetString("Policy");
-            this.Issuer = HttpContext.Session.GetString("Issuer");
+            this.Tenant = HttpContext.Session.GetString("Tenant") ?? this.Tenant;
+            this.HostName = HttpContext.Session.GetString("HostName") ?? this.HostName;
+            this.Policy = HttpContext.Session.GetString("Policy") ?? this.Policy;
+            this.Issuer = HttpContext.Session.GetString("Issuer") ?? this.Issuer;
             if (!string.IsNullOrEmpty(Tenant)) {
                 this.Tenant = Tenant;
             }
@@ -109,11 +109,11 @@ namespace SAMLTEST.Pages.SP
             if (null != Policy) HttpContext.Session.SetString("Policy", Policy);
             if (null != Issuer) HttpContext.Session.SetString("Issuer", Issuer);
 
-            string RelayState = SAMLHelper.toB64(Tenant) + "." + SAMLHelper.toB64(Policy) + "." + SAMLHelper.toB64(Issuer);
+            string RelayState = SAMLHelper.ToBase64(Tenant) + "." + SAMLHelper.ToBase64(Policy) + "." + SAMLHelper.ToBase64(Issuer);
 
             if (!string.IsNullOrEmpty(DCInfo))
             {
-                RelayState = RelayState + "." + SAMLHelper.toB64(DCInfo);
+                RelayState = RelayState + "." + SAMLHelper.ToBase64(DCInfo);
             }
 
             AuthnRequest AuthnReq;

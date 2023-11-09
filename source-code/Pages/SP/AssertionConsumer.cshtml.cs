@@ -34,12 +34,12 @@ namespace SAMLTEST.Pages.SP
             if (!String.IsNullOrWhiteSpace(RelayState))
             {
                 string[] RelayStateBits = RelayState.Split(".");
-                this.TenantId = SAMLHelper.fromB64(RelayStateBits[0]);
-                this.PolicyId = SAMLHelper.fromB64(RelayStateBits[1]);
-                this.Issuer = SAMLHelper.fromB64(RelayStateBits[2]);
+                this.TenantId = SAMLHelper.FromBase64(RelayStateBits[0]);
+                this.PolicyId = SAMLHelper.FromBase64(RelayStateBits[1]);
+                this.Issuer = SAMLHelper.FromBase64(RelayStateBits[2]);
                 if (RelayStateBits.Length > 3)
                 {
-                    this.DCInfo = SAMLHelper.fromB64(RelayStateBits[3]);
+                    this.DCInfo = SAMLHelper.FromBase64(RelayStateBits[3]);
                     this.DCInfo = this.DCInfo.Replace("&", "");
                 }
                 else
